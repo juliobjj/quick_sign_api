@@ -7,10 +7,8 @@ class DocumentoModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome_arquivo = db.Column(db.String(40), nullable=False)
     data_envio = db.Column(db.String(90), nullable=False)
-    pdf_data = db.Column(db.LargeBinary, nullable=False)  # Armazena o PDF como BLOB
+    pdf_data = db.Column(db.String, nullable=False)  # Armazena o PDF como BLOB
     usuario_id = db.Column(db.Integer, nullable=False)
-
-    # usuario = db.relationship("Usuario", back_populates="documento") 
     
     def __init__(self, nome_arquivo:str, data_envio:str, pdf_data:str, usuario_id:int):
         self.nome_arquivo = nome_arquivo
@@ -18,5 +16,5 @@ class DocumentoModel(db.Model):
         self.pdf_data = pdf_data 
         self.usuario_id = usuario_id 
 
-# Usuario.documento = db.relationship("DocumentoModel", back_populates="usuario")
+
 

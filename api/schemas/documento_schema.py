@@ -10,8 +10,8 @@ class DocumentoSchema(ma.SQLAlchemyAutoSchema):
 
   nome_arquivo = fields.String(required=False)
   data_envio = fields.String(required=False)
-  pdf_data = fields.Raw(required=True)
-  usuario_id = fields.Integer(required=True) #
+  pdf_data = fields.String(required=True)
+  usuario_id = fields.Integer(required=True)
   
 
 

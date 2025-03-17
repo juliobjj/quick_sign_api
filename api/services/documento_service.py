@@ -19,3 +19,12 @@ def cadastrar_documento(documento):
 
 def obter_documento_por_id(documento_id):
   return DocumentoModel.query.filter_by(id=documento_id).first()
+
+def listar_todos_documentos():
+  return DocumentoModel.query.all()
+
+def deletar_documento(documento_id):
+  documento = DocumentoModel.query.get(documento_id)
+  if documento:
+    db.session.delete(documento)
+    db.session.commit()

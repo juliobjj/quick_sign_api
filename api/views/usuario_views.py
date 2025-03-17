@@ -25,10 +25,8 @@ class UsuarioList(Resource):
     # Cria a entidade de usuário
     novo_usuario = UsuarioEntidade(nome=nome, email=email, senha=senha)
 
-    print(novo_usuario)
     # Chama o serviço para cadastrar no banco
     usuario_criado = cadastrar_usuario(novo_usuario)
-    print(usuario_schema.jsonify(usuario_criado))
 
     # Retorna o usuário criado serializado
     return make_response(usuario_schema.jsonify(usuario_criado), 201)
