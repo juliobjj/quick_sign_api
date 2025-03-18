@@ -30,8 +30,9 @@ debug.log
 config/settings_local.py
 
 # 🔥 Banco de dados e uploads (EXCLUÍDAS)
-api/database/
-api/uploads/
+/api/database/
+/api/uploads/
+/api
 
 # 📝 Arquivos temporários e caches
 .DS_Store
