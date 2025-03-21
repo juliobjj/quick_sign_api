@@ -1,5 +1,4 @@
 from ..base import db 
-from .usuario_model import Usuario
 
 class DocumentoModel(db.Model):
     __tablename__ = 'documento'   

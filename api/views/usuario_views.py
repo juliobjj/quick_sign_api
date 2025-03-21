@@ -1,35 +1,51 @@
-from flask_restful import Resource
-from flask import request, make_response, jsonify
+from flask import request, jsonify, redirect
+from flask_openapi3 import Tag, APIBlueprint
+from pydantic import ValidationError
 
-from api.schemas.usuario_schema import UsuarioSchema
-from api.entidades.usuario_entidade import UsuarioEntidade
+from api.schemas.usuario_schema import UsuarioSchema, ValidacaoUsuario, UsuarioResponse
 from api.services.usuario_service import cadastrar_usuario
+from api.schemas.error import ErrorSchema
 
-class UsuarioList(Resource):
-  def get(self):
-    return jsonify({"mensagem": "Olá, mundo!"})
+# Definição das tags de documentação
+home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
+usuario_tag = Tag(name="Usuários", description="Gerenciamento de usuários")
 
-  def post(self):
-    usuario_schema = UsuarioSchema()
+# Criando o APIBlueprint
+usuario_bp = APIBlueprint("usuarios", __name__, url_prefix="/usuario", abp_tags=[usuario_tag])
 
-    # Valida os dados recebidos
-    erros = usuario_schema.validate(request.json)
-    if erros:
-        return make_response(jsonify(erros), 400)
+class UsuarioView:
+  # Rota para redirecionar à documentação
+  @usuario_bp.get("/", tags=[home_tag])
+  def home():
+      """
+        Redireciona para a documentação OpenAPI.
+      """
+      return redirect("/openapi")
+  
+  @usuario_bp.post("/cadastrar", tags=[usuario_tag], responses={"201": UsuarioResponse, "400": ErrorSchema, "422": ValidacaoUsuario})
+  def cadastrar(body: UsuarioSchema):
+     """
+     Cadastra um novo usuário
+     """
+     try: 
+        # Valida os dados de entrada
+        dados = request.get_json(force=True)
+        usuario_schema = UsuarioSchema(**dados)
 
-    # Extrai os dados
-    nome = request.json.get("nome")
-    email = request.json.get("email")
-    senha = request.json.get("senha")
+        # Chama o serviço para cadastrar o usuário
+        usuario_cadastrado = cadastrar_usuario(usuario_schema)
 
-    # Cria a entidade de usuário
-    novo_usuario = UsuarioEntidade(nome=nome, email=email, senha=senha)
-
-    # Chama o serviço para cadastrar no banco
-    usuario_criado = cadastrar_usuario(novo_usuario)
-
-    # Retorna o usuário criado serializado
-    return make_response(usuario_schema.jsonify(usuario_criado), 201)
-
-
+        # Objeto serializado
+        return jsonify(usuario_cadastrado.dict()), 201
+     except ValidationError as e:
+        #Retorna erro de validação do Schema
+        return jsonify({"erro": "Dados inválidos", "mensage": str(e)}), 400
+     
+     except ValueError as e:
+        # Erro usuáriojá existe
+        return jsonify({"erro": str(e)}), 400
+     
+     except Exception as e: 
+        #Erro genérico
+        return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500
 
