@@ -6,8 +6,7 @@ from api.schemas.usuario_schema import UsuarioSchema, ValidacaoUsuario, UsuarioR
 from api.services.usuario_service import cadastrar_usuario
 from api.schemas.error import ErrorSchema
 
-# Definição das tags de documentação
-home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
+# Definição da tag de documentação
 usuario_tag = Tag(name="Usuários", description="Gerenciamento de usuários")
 
 # Criando o APIBlueprint
@@ -15,7 +14,6 @@ usuario_bp = APIBlueprint("usuarios", __name__, url_prefix="/usuario", abp_tags=
 
 class UsuarioView:
   # Rota para redirecionar à documentação
-  @usuario_bp.get("/", tags=[home_tag])
   def home():
       """
         Redireciona para a documentação OpenAPI.

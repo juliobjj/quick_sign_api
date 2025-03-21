@@ -11,12 +11,12 @@ def create_app():
     app.config.from_object("config.Config")
     db.init_app(app)
 
-    # Importando os Blueprints para registrar a rota /usuario
+    # Importando os Blueprints para registrar as rotas
     from api.views.usuario_views import usuario_bp
     app.register_api(usuario_bp) 
 
-    #from .views.documento_view import DocumentoView
-    #app.register_api(DocumentoView)  
+    from .views.documento_view import documento_bp
+    app.register_api(documento_bp)  
 
     # Criar o banco dentro do contexto
     with app.app_context():

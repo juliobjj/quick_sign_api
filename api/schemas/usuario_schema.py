@@ -2,8 +2,6 @@ from pydantic import BaseModel, EmailStr, Field
 from api.model.usuario_model import Usuario
 from typing import List
 
-from pydantic import BaseModel, EmailStr, Field
-
 class UsuarioSchema(BaseModel):
     nome: str = Field(..., title="Nome", description="Nome do usuário")
     email: EmailStr = Field(..., title="Email", description="E-mail do usuário")

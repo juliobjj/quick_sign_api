@@ -1,83 +1,61 @@
-from flask_restful import Resource
 from flask import request, make_response, jsonify, send_file
+from flask_openapi3 import Tag, APIBlueprint
+from pydantic import ValidationError
 from werkzeug.utils import secure_filename
 import os
 import uuid
 
-from api.schemas.documento_schema import DocumentoSchema
-from api.entidades.documento_entidade import DocumentoEntidade
+from api.schemas.documento_schema import DocumentoSchema, ValidacaoDocumento, DocumenteResponseSchema, DocumentoListagemSchema
 from api.services.documento_service import cadastrar_documento, obter_documento_por_id, listar_todos_documentos, deletar_documento
+from api.services.documento_service import StorageService
+from api.schemas.error import ErrorSchema
 
 UPLOAD_FOLDER = "uploads/"  # Define o diretório onde os PDFs serão salvos
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)  # Garante que a pasta exista
 
-documento_schema = DocumentoSchema()
-documentos_schema = DocumentoSchema(many=True)
-class DocumentoView(Resource):
-  def get(self, documento_id=None, acao=None):
-    if documento_id:
-        documento = obter_documento_por_id(documento_id)
-        if not documento:
-          return make_response(jsonify({"erro": "Documento não encontrado"}), 404)
-        
-        if acao == "download":
-          caminho_arquivo = documento.pdf_data
-          if not os.path.exists(caminho_arquivo):
-              return make_response(jsonify({"erro": "Arquivo não encontrado no servidor"}), 404)
-          return send_file(caminho_arquivo, as_attachment=True, download_name=documento.nome_arquivo, mimetype="application/pdf")
-        return make_response(jsonify({"mensagem":"Documento encontrado com sucesso", "documento":documento_schema.dump(documento)}), 200)
+# Definição da tag de documentação
+documento_tag = Tag(name="Documentos", description="Gerenciamento de documento")
+documento_bp = APIBlueprint("documento", __name__, url_prefix="/documento", abp_tags=[documento_tag])
+
+class DocumentoView:
+  @documento_bp.post("/cadastrar", tags=[documento_tag], responses={"201": DocumenteResponseSchema, "400": ErrorSchema})
+  def cadastrar():
+    """
+    Cadastra um novo documento
+    """
+    try: 
+      pdf_data = request.files["pdf_data"]
+      nome_arquivo = request.form.get("nome_arquivo")
+      data_envio = request.form.get("data_envio")
+
+      caminho_arquivo = StorageService.salvar_arquivo(pdf_data)
+
+      documento_schema = DocumentoSchema(nome_arquivo=nome_arquivo, data_envio=data_envio, pdf_data=caminho_arquivo) 
+      documento_cadastrado = cadastrar_documento(documento_schema)  
+
+      return jsonify(documento_cadastrado.dict()), 201
     
-    documentos = listar_todos_documentos()
-    return make_response(jsonify({"mensagem": "Documentos listados com sucesso", "documentos": documentos_schema.dump(documentos)}), 200)
-
-  def post(self):
-    documento_schema = DocumentoSchema()
-
-    # Verifica se o arquivo foi enviado
-    if 'pdf_data' not in request.files:
-      return make_response(jsonify({"erro": "O arquivo PDF é obrigatório"}), 400)
-    
-    # Extrai os dados
-    pdf_data = request.files['pdf_data']
-    nome_arquivo = secure_filename(pdf_data.filename.lower())
-    data_envio = request.form.get("data_envio")
-    usuario_id = request.form.get("usuario_id")
-
-    # Verifica extensão do arquivo
-    if not nome_arquivo.endswith(".pdf"):
-        return make_response(jsonify({"erro": "Apenas arquivos PDF são permitidos"}), 400)
-    
-    nome_unico = f"{uuid.uuid4().hex}_{nome_arquivo}"
-    caminho_arquivo = os.path.join(UPLOAD_FOLDER, nome_unico)
-    
-    if hasattr(pdf_data, "save"):  # Verifica se o objeto tem o método save()
-      try:
-          pdf_data.save(caminho_arquivo)  # Salva o arquivo no diretório uploads
-      except Exception as e:
-          return make_response(jsonify({"erro": f"Erro ao salvar arquivo: {str(e)}"}), 500)
-    else:
-      return make_response(jsonify({"erro": "Arquivo inválido"}), 400)
-
-    # Cria a entidade de usuário
-    novo_documento = DocumentoEntidade(nome_arquivo=nome_unico, data_envio=data_envio, pdf_data=caminho_arquivo, usuario_id=usuario_id)
-    # Chama o serviço para cadastrar no banco
-    documento_criado = cadastrar_documento(novo_documento)
-
-    # Retorna o documento criado serializado
-    return make_response(jsonify({"mensagem": "Documento cadastrado com sucesso", "documento":documento_schema.dump(documento_criado)}), 201)
+    except ValidationError as e:
+      return jsonify({"erro": "Dados inválidos", "mensage": str(e)}), 400
   
-  def delete(self, documento_id):
-    documento = obter_documento_por_id(documento_id)
+    except ValueError as e:
+      # Erro documento já existe
+      return jsonify({"erro": str(e)}), 400
+     
+    except Exception as e: 
+      # Erro genérico
+      return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500
+     
+  @documento_bp.get("/listar", tags=[documento_tag], responses={"200": DocumentoListagemSchema, "400": ErrorSchema})
+  def listar():
+    """Faz a busca por todos os Produto cadastrados
 
-    if not documento:
-        return make_response(jsonify({"erro": "Documento não encontrado"}), 404)
-    
-    caminho_arquivo = documento.pdf_data
+    Retorna uma representação da listagem de produtos
+    """
+    documentos = listar_todos_documentos()
 
-    # Exclui o arquivo da pasta /uploads
-    if os.path.exists(caminho_arquivo):
-        os.remove(caminho_arquivo)
-        
-    deletar_documento(documento_id)
+    return jsonify(documentos.dict()), 200
+
+
     
-    return make_response(jsonify({"mensagem": "Documento removido com sucesso", "documento": documento_schema.dump(documento)}), 200)
+  
