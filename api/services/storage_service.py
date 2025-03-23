@@ -17,6 +17,7 @@ class StorageService:
       # Garante que o diretório de destino existe
       os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+      
       # Assegura um nome seguro para o arquivo
       nome_arquivo_seguro = secure_filename(arquivo.filename.lower())
       caminho_arquivo = os.path.join(UPLOAD_FOLDER, nome_arquivo_seguro)

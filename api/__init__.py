@@ -1,12 +1,12 @@
 from flask_openapi3 import OpenAPI, Info
-
+from flask import Flask
 from .base import db 
-
-
-info = Info(title="API de Quick Sign", version="1.0.0")
+from flask_cors import CORS
 
 def create_app():
+    info = Info(title="API de Quick Sign", version="1.0.0")
     app = OpenAPI(__name__, info=info)  # Inicializando o OpenAPI
+    CORS(app)
 
     app.config.from_object("config.Config")
     db.init_app(app)

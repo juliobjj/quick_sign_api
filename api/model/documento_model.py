@@ -5,7 +5,7 @@ class DocumentoModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome_arquivo = db.Column(db.String(40), nullable=False)
-    data_envio = db.Column(db.String(90), nullable=False)
+    data_envio = db.Column(db.DateTime(90), nullable=False)
     pdf_data = db.Column(db.String, nullable=False)
     
     def __init__(self, nome_arquivo:str, data_envio:str, pdf_data:str):
