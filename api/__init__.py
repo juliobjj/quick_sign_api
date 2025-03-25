@@ -12,8 +12,8 @@ def create_app():
     db.init_app(app)
 
     # Importando os Blueprints para registrar as rotas
-    from api.views.usuario_views import usuario_bp
-    app.register_api(usuario_bp) 
+    from api.views.assinatura_views import assinatura_bp
+    app.register_api(assinatura_bp) 
 
     from .views.documento_view import documento_bp
     app.register_api(documento_bp)  

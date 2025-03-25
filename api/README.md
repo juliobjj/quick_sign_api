@@ -17,3 +17,5 @@
 - Flask-Migrate 4.1.0
 - flask-marshmallow 1.3.0
 - flask-cors 5.0.1
+- PyMuPDF 1.25.4
+- PyPDF2 3.0.1
