@@ -3,8 +3,9 @@ from flask_openapi3 import Tag, APIBlueprint
 from pydantic import ValidationError
 
 from api.schemas.assinatura_schema import AssinaturaSchema, ValidacaoAssinatura, AssinaturaResponse
-from api.services.assinatura_service import cadastrar_assinatura, assinar_pdf
-from api.services.documento_service import obter_documento_por_id
+from api.schemas.documento_schema import DocumentoSchema
+from api.services.assinatura_service import cadastrar_assinatura, assinar_pdf, pode_assinar
+from api.services.documento_service import obter_documento_por_id, editar_documento
 from api.schemas.error import ErrorSchema
 
 # Definição da tag de documentação
@@ -23,15 +24,22 @@ class AssinaturaView:
         dados = request.get_json(force=True)
         assinatura_schema = AssinaturaSchema(**dados)
 
-        # Chama o serviço para cadastrar o assinatura
-        assinatura_cadastrado = cadastrar_assinatura(assinatura_schema)
+        if pode_assinar(body.id_documento):
+         # Chama o serviço para cadastrar o assinatura
+         assinatura_cadastrado = cadastrar_assinatura(assinatura_schema)
 
-        buscar_documento = obter_documento_por_id(body.id_documento)
+         buscar_documento = obter_documento_por_id(body.id_documento)
 
-        assinar_pdf(buscar_documento.pdf_data, body.nome, body.cpf)
+         assinar_pdf(buscar_documento.pdf_data, body.nome, body.cpf)
 
-        # Objeto serializado
-        return jsonify(assinatura_cadastrado.dict()), 201
+         documento_schema = DocumentoSchema(nome_arquivo=buscar_documento.nome_arquivo, pdf_data=buscar_documento.pdf_data) 
+
+         editar_documento(body.id_documento, documento_schema)
+
+         # Objeto serializado
+         return jsonify(assinatura_cadastrado.dict()), 201
+        else:
+           return jsonify({"mesage": "PDF já assinado"}), 400
      except ValidationError as e:
         #Retorna erro de validação do Schema
         return jsonify({"erro": "Dados inválidos", "mensage": str(e)}), 400

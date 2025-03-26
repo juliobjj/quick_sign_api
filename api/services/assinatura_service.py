@@ -18,6 +18,7 @@ def cadastrar_assinatura(assinatura_schema: AssinaturaSchema):
     nova_assinatura = AssinaturaModel(
         nome=assinatura_schema.nome,
         cpf=assinatura_schema.cpf,
+        data_assinatura= datetime.datetime.utcnow(),
         id_documento=assinatura_schema.id_documento
     )
     
@@ -29,6 +30,13 @@ def cadastrar_assinatura(assinatura_schema: AssinaturaSchema):
 
     # Retorna o usuário criado em formato de dicionário
     return assinatura_serializado
+
+def pode_assinar(id_documento):
+    resultado = AssinaturaModel.query.get(id_documento)
+
+    if resultado:
+        return False
+    return True
 
 def assinar_pdf(pdf_caminho, nome, cpf):
     # Abrir o PDF

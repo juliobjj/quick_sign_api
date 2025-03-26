@@ -28,6 +28,19 @@ def cadastrar_documento(documento_schema: DocumentoSchema):
   # Retorna o documento criado em formato de dicionário
   return documento_serializado
 
+def editar_documento(id_documento: int, documento_schema: DocumentoSchema):
+  documento = obter_documento_por_id(id_documento)
+  if not documento: 
+    raise ValueError("Documento não encontrado")
+  
+  documento.nome_arquivo = documento_schema.nome_arquivo
+  documento.pdf_data = documento_schema.pdf_data
+  documento.data_envio = datetime.datetime.utcnow()
+
+  db.session.commit()
+
+  return DocumentoResponseSchema.from_orm(documento)
+
 def obter_documento_por_id(documento_id: int):
     documento = DocumentoModel.query.get(documento_id)
 

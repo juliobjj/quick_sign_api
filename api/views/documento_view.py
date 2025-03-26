@@ -3,7 +3,7 @@ from flask_openapi3 import Tag, APIBlueprint
 from pydantic import ValidationError
 
 from api.schemas.documento_schema import DocumentoSchema, DocumentoResponseSchema, DocumentoBuscaSchema
-from api.services.documento_service import cadastrar_documento, obter_documento_por_id, listar_todos_documentos, deletar_documento, salvar_arquivo, download_arquivo
+from api.services.documento_service import cadastrar_documento, obter_documento_por_id, editar_documento, listar_todos_documentos, deletar_documento, salvar_arquivo, download_arquivo
 from api.schemas.error import ErrorSchema
 
 # Definição da tag de documentação
@@ -11,6 +11,23 @@ documento_tag = Tag(name="Documentos", description="Gerenciamento de documento")
 documento_bp = APIBlueprint("documento", __name__, url_prefix="/documento" ,abp_tags=[documento_tag])
 
 class DocumentoView:
+  @documento_bp.put("/editar", summary="Cadastra um novo documento", description="hgskdjh",
+                     tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
+  def editar(form: DocumentoSchema):
+    try:
+      pdf_data = request.files.get("pdf_data")
+      id_documento = request.args.get("id_documento")
+
+      caminho_arquivo = salvar_arquivo(pdf_data)
+       
+      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo) 
+      documento = editar_documento(id_documento, documento_schema)
+
+      return jsonify(documento.model_dump()), 201
+    
+    except Exception as e: 
+        return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500 
+          
   @documento_bp.post("/cadastrar", summary="Cadastra um novo documento", description="hgskdjh",
                      tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
   def cadastrar(form: DocumentoSchema):

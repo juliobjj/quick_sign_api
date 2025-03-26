@@ -7,7 +7,7 @@ class DocumentoModel(db.Model):
 
     id = db.Column("pk_documento", db.Integer, primary_key=True, autoincrement=True)
     nome_arquivo = db.Column(db.String(40), nullable=False)
-    data_envio = db.Column(db.DateTime(90), nullable=False)
+    data_envio = db.Column(db.DateTime, nullable=False)
     pdf_data = db.Column(db.String, nullable=False)
 
     assinaturas = relationship("AssinaturaModel", back_populates="documento", cascade="all, delete-orphan")
