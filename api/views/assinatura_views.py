@@ -32,7 +32,11 @@ class AssinaturaView:
 
          assinar_pdf(buscar_documento.pdf_data, body.nome, body.cpf)
 
-         documento_schema = DocumentoSchema(nome_arquivo=buscar_documento.nome_arquivo, pdf_data=buscar_documento.pdf_data) 
+         documento_schema = DocumentoSchema(
+            nome_arquivo=buscar_documento.nome_arquivo,
+            pdf_data=buscar_documento.pdf_data,
+            status_assinatura=True
+         ) 
 
          editar_documento(body.id_documento, documento_schema)
 

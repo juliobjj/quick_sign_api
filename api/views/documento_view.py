@@ -17,10 +17,10 @@ class DocumentoView:
     try:
       pdf_data = request.files.get("pdf_data")
       id_documento = request.args.get("id_documento")
-
+     
       caminho_arquivo = salvar_arquivo(pdf_data)
        
-      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo) 
+      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo, status_assinatura=form.status_assinatura) 
       documento = editar_documento(id_documento, documento_schema)
 
       return jsonify(documento.model_dump()), 201
@@ -42,7 +42,7 @@ class DocumentoView:
 
       caminho_arquivo = salvar_arquivo(pdf_data)
 
-      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo) 
+      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo, status_assinatura=form.status_assinatura) 
       documento_cadastrado = cadastrar_documento(documento_schema)  
 
       return jsonify(documento_cadastrado.model_dump()), 201

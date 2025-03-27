@@ -6,12 +6,14 @@ from datetime import datetime
 class DocumentoSchema(BaseModel):
   nome_arquivo: str = "qualquer nome"
   pdf_data:  Annotated[FileStorage, "formData"] 
+  status_assinatura: bool
 
 class DocumentoResponseSchema(BaseModel):
   id: int
   nome_arquivo: str
   data_envio: datetime
   pdf_data: str
+  status_assinatura: bool
 
   class Config:
     orm_mode = True

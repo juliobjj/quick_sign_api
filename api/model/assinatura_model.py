@@ -7,7 +7,7 @@ class AssinaturaModel(db.Model):
 
     id = db.Column("pk_assinatura", db.Integer, primary_key=True, autoincrement=True)
     nome = db.Column(db.String(40), nullable=False)
-    cpf = db.Column(db.String(14), nullable=False)
+    cpf = db.Column(db.String(11), nullable=False)
     id_documento = db.Column(db.Integer, db.ForeignKey("documento.pk_documento"), nullable=False)
     data_assinatura = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 

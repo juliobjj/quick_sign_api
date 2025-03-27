@@ -3,6 +3,7 @@ from ..model.assinatura_model import AssinaturaModel
 from ..base import db 
 import fitz
 import datetime
+import re
 
 def listar_assinaturas():
     """
@@ -15,9 +16,11 @@ def cadastrar_assinatura(assinatura_schema: AssinaturaSchema):
     """
     Cadastra uma nova assinatura
     """
+    cpf_limpo = limpar_cpf(assinatura_schema.cpf)
+
     nova_assinatura = AssinaturaModel(
         nome=assinatura_schema.nome,
-        cpf=assinatura_schema.cpf,
+        cpf=cpf_limpo,
         data_assinatura= datetime.datetime.utcnow(),
         id_documento=assinatura_schema.id_documento
     )
@@ -38,10 +41,15 @@ def pode_assinar(id_documento):
         return False
     return True
 
+def limpar_cpf(cpf):
+    return re.sub(r'\D', '', cpf)
+
 def assinar_pdf(pdf_caminho, nome, cpf):
+    limpar_cpf(cpf)
+
     # Abrir o PDF
     doc = fitz.open(pdf_caminho)
-    
+    # cpf = 
     # Dados para assinatura
     texto_assinatura = f"Assinado por: {nome} - CPF: {cpf} em {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}"
     
