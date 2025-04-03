@@ -25,7 +25,7 @@ class AssinaturaView:
         assinatura_schema = AssinaturaSchema(**dados)
 
         if pode_assinar(body.id_documento):
-         # Chama o serviço para cadastrar o assinatura
+         # Chama o serviço para cadastrar a assinatura
          assinatura_cadastrado = cadastrar_assinatura(assinatura_schema)
 
          buscar_documento = obter_documento_por_id(body.id_documento)

@@ -11,9 +11,11 @@ documento_tag = Tag(name="Documentos", description="Gerenciamento de documento")
 documento_bp = APIBlueprint("documento", __name__, url_prefix="/documento" ,abp_tags=[documento_tag])
 
 class DocumentoView:
-  @documento_bp.put("/editar", summary="Cadastra um novo documento", description="hgskdjh",
-                     tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
+  @documento_bp.put("/editar", tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
   def editar(form: DocumentoSchema):
+    """
+    Edita um documento a partir de um id
+    """
     try:
       pdf_data = request.files.get("pdf_data")
       id_documento = request.args.get("id_documento")
@@ -28,8 +30,7 @@ class DocumentoView:
     except Exception as e: 
         return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500 
           
-  @documento_bp.post("/cadastrar", summary="Cadastra um novo documento", description="hgskdjh",
-                     tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
+  @documento_bp.post("/cadastrar", tags=[documento_tag], responses={"201": DocumentoResponseSchema,"400": ErrorSchema})
   def cadastrar(form: DocumentoSchema):
     """
     Cadastra um novo documento
@@ -84,7 +85,9 @@ class DocumentoView:
 
   @documento_bp.delete("/deletar", tags=[documento_tag], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
   def deletar_documento(query: DocumentoBuscaSchema): 
-
+    """
+    Deleta umm documento
+    """
     try:
       documento = deletar_documento(query.documento_id)
       documento_serializado = DocumentoResponseSchema.from_orm(documento)

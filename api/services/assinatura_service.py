@@ -2,15 +2,8 @@ from ..schemas.assinatura_schema import AssinaturaSchema, AssinaturaResponse
 from ..model.assinatura_model import AssinaturaModel
 from ..base import db 
 import fitz
-import datetime
+from datetime import datetime
 import re
-
-def listar_assinaturas():
-    """
-    Retorna uma lista de usuários cadastrados
-    """
-    assinaturas = AssinaturaModel.query.all()
-    return [AssinaturaSchema.from_orm(assinatura).dict() for assinatura in assinaturas]
 
 def cadastrar_assinatura(assinatura_schema: AssinaturaSchema):
     """
@@ -21,7 +14,7 @@ def cadastrar_assinatura(assinatura_schema: AssinaturaSchema):
     nova_assinatura = AssinaturaModel(
         nome=assinatura_schema.nome,
         cpf=cpf_limpo,
-        data_assinatura= datetime.datetime.utcnow(),
+        data_assinatura= datetime.now(),
         id_documento=assinatura_schema.id_documento
     )
     
@@ -49,9 +42,8 @@ def assinar_pdf(pdf_caminho, nome, cpf):
 
     # Abrir o PDF
     doc = fitz.open(pdf_caminho)
-    # cpf = 
     # Dados para assinatura
-    texto_assinatura = f"Assinado por: {nome} - CPF: {cpf} em {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    texto_assinatura = f"Assinado por: {nome} - CPF: {cpf} em {datetime.now().strftime('%d/%m/%Y %H:%M')}"
     
     for pagina in doc:
         altura = pagina.rect.height  # Apenas pegamos a altura, já que a largura não é necessária

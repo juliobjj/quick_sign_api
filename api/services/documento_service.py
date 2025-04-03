@@ -16,7 +16,7 @@ def cadastrar_documento(documento_schema: DocumentoSchema):
   """
   novo_documento = DocumentoModel(
     nome_arquivo=documento_schema.nome_arquivo,
-    data_envio=datetime.datetime.utcnow(),
+    data_envio=datetime.datetime.now(),
     pdf_data=documento_schema.pdf_data,
     status_assinatura=documento_schema.status_assinatura
   )
@@ -36,7 +36,7 @@ def editar_documento(id_documento: int, documento_schema: DocumentoSchema):
   
   documento.nome_arquivo = documento_schema.nome_arquivo
   documento.pdf_data = documento_schema.pdf_data
-  documento.data_envio = datetime.datetime.utcnow()
+  documento.data_envio = datetime.datetime.now()
   documento.status_assinatura = documento_schema.status_assinatura
 
   db.session.commit()

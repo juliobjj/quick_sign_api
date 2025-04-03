@@ -4,9 +4,9 @@ from flask_openapi3 import FileStorage
 from datetime import datetime
 
 class DocumentoSchema(BaseModel):
-  nome_arquivo: str = "qualquer nome"
+  nome_arquivo: str = "Meu primeiro arquivo"
   pdf_data:  Annotated[FileStorage, "formData"] 
-  status_assinatura: bool
+  status_assinatura: bool = False
 
 class DocumentoResponseSchema(BaseModel):
   id: int
@@ -16,7 +16,6 @@ class DocumentoResponseSchema(BaseModel):
   status_assinatura: bool
 
   class Config:
-    orm_mode = True
     from_attributes = True
 
 class DocumentoBuscaSchema(BaseModel):

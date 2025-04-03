@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from api.model.assinatura_model import AssinaturaModel
 from typing import List
-import datetime
+from datetime import datetime
 
 class AssinaturaSchema(BaseModel):
     nome: str = Field(..., title="Nome", description="Nome do usuário")
@@ -12,7 +12,7 @@ class AssinaturaResponse(BaseModel):
     id: int
     nome: str 
     cpf: str 
-    data_assinatura: datetime.datetime.utcnow
+    data_assinatura: datetime
     id_documento: int
 
     class Config:
