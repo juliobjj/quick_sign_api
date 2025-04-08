@@ -100,5 +100,3 @@ def download_arquivo(documento_id):
   caminho_arquivo = documento.pdf_data
 
   return caminho_arquivo
-
-
