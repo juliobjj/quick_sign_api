@@ -32,15 +32,26 @@ Antes de executar o projeto, você precisará:
 2. **Criando ambiente virtual:**
 
 ```
-python -m venv env
-source env/bin/activate # Linux/Mac
-env\Scripts\activate # Windows
+(env)$ python3 -m venv env
+```
+Linux/Mac
+```
+(env)$ source env/bin/activate
+```
+Windows
+```
+(env)$ env\Scripts\activate 
 ```
 
 3. **Instale as dependências:**
 
+Acesse o diretório api
 ```
-(env)$ pip install -r requirements.txt
+(env)$ cd api 
+```
+
+```
+(env)$ pip install -r requiriments.txt
 ```
 
 4. **Execute a aplicações:**
