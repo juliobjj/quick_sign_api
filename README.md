@@ -45,12 +45,13 @@ env\Scripts\activate # Windows
 
 4. **Execute a aplicações:**
 
+Modo padrão:
 ```
-(env)$ flask run #Modo padrão
+(env)$ flask run 
 ```
-
+Modo desenvolvimento: 
 ```
-(env)$ flask run --debug #Modo desenvolvimento
+(env)$ flask run --debug
 ```
 
 ## ✅ Verificando a API
