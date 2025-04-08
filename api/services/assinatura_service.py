@@ -9,7 +9,7 @@ def cadastrar_assinatura(assinatura_schema: AssinaturaSchema):
     """
     Cadastra uma nova assinatura
     """
-    cpf_limpo = limpar_cpf(assinatura_schema.cpf)
+    cpf_limpo = re.sub(r'\D', '', assinatura_schema.cpf)
 
     nova_assinatura = AssinaturaModel(
         nome=assinatura_schema.nome,
@@ -34,19 +34,18 @@ def pode_assinar(id_documento):
         return False
     return True
 
-def limpar_cpf(cpf):
-    return re.sub(r'\D', '', cpf)
-
 def assinar_pdf(pdf_caminho, nome, cpf):
-    limpar_cpf(cpf)
+    cpf_formatado = f'{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}'
 
     # Abrir o PDF
     doc = fitz.open(pdf_caminho)
+
     # Dados para assinatura
-    texto_assinatura = f"Assinado por: {nome} - CPF: {cpf} em {datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    texto_assinatura = f"Assinado por: {nome} - CPF: {cpf_formatado} em {datetime.now().strftime('%d/%m/%Y %H:%M')}"
     
     for pagina in doc:
         altura = pagina.rect.height  # Apenas pegamos a altura, já que a largura não é necessária
+
         # Adicionar assinatura no rodapé
         pagina.insert_text((50, altura - 50), texto_assinatura, fontsize=10, color=(0, 0, 0))
 

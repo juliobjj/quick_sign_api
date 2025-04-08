@@ -1,6 +1,7 @@
-from flask import request, jsonify, redirect
+from flask import request, jsonify
 from flask_openapi3 import Tag, APIBlueprint
 from pydantic import ValidationError
+import re
 
 from api.schemas.assinatura_schema import AssinaturaSchema, ValidacaoAssinatura, AssinaturaResponse
 from api.schemas.documento_schema import DocumentoSchema
@@ -22,7 +23,9 @@ class AssinaturaView:
      try: 
         # Valida os dados de entrada
         dados = request.get_json(force=True)
-       
+
+        cpf_limpo = re.sub(r"\D", "", body.cpf)
+
         if pode_assinar(body.id_documento):
          assinatura_schema = AssinaturaSchema(**dados)
 
@@ -31,7 +34,7 @@ class AssinaturaView:
 
          buscar_documento = obter_documento_por_id(body.id_documento)
 
-         assinar_pdf(buscar_documento.pdf_data, body.nome, body.cpf)
+         assinar_pdf(buscar_documento.pdf_data, body.nome, cpf_limpo)
 
          documento_schema = DocumentoSchema(
             nome_arquivo=buscar_documento.nome_arquivo,

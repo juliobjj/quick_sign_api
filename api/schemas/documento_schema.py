@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List, Annotated
 from flask_openapi3 import FileStorage
 from datetime import datetime
+from werkzeug.datastructures import FileStorage as WerkzeugFile
 
 class DocumentoSchema(BaseModel):
   nome_arquivo: str = "Meu primeiro arquivo"

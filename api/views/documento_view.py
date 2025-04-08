@@ -18,7 +18,6 @@ class DocumentoView:
     """
     try:
       pdf_data = request.files.get("pdf_data")
-      #id_documento = request.args.get("id_documento")
      
       caminho_arquivo = salvar_arquivo(pdf_data)
        
@@ -37,6 +36,9 @@ class DocumentoView:
     """
     try: 
       pdf_data = request.files.get("pdf_data")
+
+      if not pdf_data or not pdf_data.filename.lower().endswith(".pdf"):
+        return {"erro": "Apenas arquivos PDF são permitidos"}, 400
 
       if not pdf_data:
                 return jsonify({"erro": "Arquivo PDF é obrigatórios"}), 400
