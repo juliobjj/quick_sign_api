@@ -12,18 +12,18 @@ documento_bp = APIBlueprint("documento", __name__, url_prefix="/documento" ,abp_
 
 class DocumentoView:
   @documento_bp.put("/editar", tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
-  def editar(form: DocumentoSchema):
+  def editar(form: DocumentoSchema, query: DocumentoBuscaSchema):
     """
     Edita um documento a partir de um id
     """
     try:
       pdf_data = request.files.get("pdf_data")
-      id_documento = request.args.get("id_documento")
+      #id_documento = request.args.get("id_documento")
      
       caminho_arquivo = salvar_arquivo(pdf_data)
        
-      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo, status_assinatura=form.status_assinatura) 
-      documento = editar_documento(id_documento, documento_schema)
+      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo) 
+      documento = editar_documento(query.documento_id, documento_schema)
 
       return jsonify(documento.model_dump()), 201
     
@@ -43,7 +43,7 @@ class DocumentoView:
 
       caminho_arquivo = salvar_arquivo(pdf_data)
 
-      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo, status_assinatura=form.status_assinatura) 
+      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo) 
       documento_cadastrado = cadastrar_documento(documento_schema)  
 
       return jsonify(documento_cadastrado.model_dump()), 201

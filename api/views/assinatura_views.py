@@ -22,9 +22,10 @@ class AssinaturaView:
      try: 
         # Valida os dados de entrada
         dados = request.get_json(force=True)
-        assinatura_schema = AssinaturaSchema(**dados)
-
+       
         if pode_assinar(body.id_documento):
+         assinatura_schema = AssinaturaSchema(**dados)
+
          # Chama o serviço para cadastrar a assinatura
          assinatura_cadastrado = cadastrar_assinatura(assinatura_schema)
 

@@ -53,4 +53,3 @@ def assinar_pdf(pdf_caminho, nome, cpf):
     # Salvar o PDF assinado
     doc.save(pdf_caminho, incremental=True, encryption=fitz.PDF_ENCRYPT_KEEP)
     doc.close()
-    print(f"Documento assinado salvo em: {pdf_caminho}")

@@ -6,7 +6,6 @@ from datetime import datetime
 class DocumentoSchema(BaseModel):
   nome_arquivo: str = "Meu primeiro arquivo"
   pdf_data:  Annotated[FileStorage, "formData"] 
-  status_assinatura: bool = False
 
 class DocumentoResponseSchema(BaseModel):
   id: int

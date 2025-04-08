@@ -18,6 +18,9 @@ def create_app():
     from .views.documento_view import documento_bp
     app.register_api(documento_bp)  
 
+    from .views.health_view import health_bp
+    app.register_api(health_bp)
+
     # Criar o banco dentro do contexto
     with app.app_context():
         db.create_all()

@@ -3,7 +3,6 @@ from ..schemas.documento_schema import DocumentoSchema, DocumentoResponseSchema,
 from ..base import db 
 
 from werkzeug.utils import secure_filename
-from flask import send_file
 import datetime
 import os
 import uuid
@@ -18,7 +17,7 @@ def cadastrar_documento(documento_schema: DocumentoSchema):
     nome_arquivo=documento_schema.nome_arquivo,
     data_envio=datetime.datetime.now(),
     pdf_data=documento_schema.pdf_data,
-    status_assinatura=documento_schema.status_assinatura
+    status_assinatura=False
   )
 
   db.session.add(novo_documento)
@@ -30,6 +29,9 @@ def cadastrar_documento(documento_schema: DocumentoSchema):
   return documento_serializado
 
 def editar_documento(id_documento: int, documento_schema: DocumentoSchema):
+  """
+  Edita um documento
+  """
   documento = obter_documento_por_id(id_documento)
   if not documento: 
     raise ValueError("Documento não encontrado")
@@ -37,7 +39,7 @@ def editar_documento(id_documento: int, documento_schema: DocumentoSchema):
   documento.nome_arquivo = documento_schema.nome_arquivo
   documento.pdf_data = documento_schema.pdf_data
   documento.data_envio = datetime.datetime.now()
-  documento.status_assinatura = documento_schema.status_assinatura
+  documento.status_assinatura = True
 
   db.session.commit()
 

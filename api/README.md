@@ -1,21 +1,58 @@
-# Criar e iniciar um ambiente virtual
+# 🚀 Minha API
 
-- python3 -m venv .venv
-- source .venv/bin/activate # Linux/Mac
-  ou
-- .venv\Scripts\activate # Windows (cmd)
+Esta API faz parte do sistema **Quick Sign**, e foi desenvolvida com o objetivo de gerenciar **documentos eletrônicos** e **assinaturas digitais.**
 
-# Intalando as dependencias
+## 📌 O que essa API faz?
 
-- Flask 3.1.0 (Framework)
-- SQLAlchemy 2.0.39 (ORM)
-- Flask-SQLAlchemy 3.1.1 (Extensão para api flask)
-- passlib 1.7.4
-- SQLAlchemy-Utils 0.41.2
-- Flask-Migrate 4.1.0
-- Flask-RESTful 0.3.10
-- Flask-Migrate 4.1.0
-- flask-marshmallow 1.3.0
-- flask-cors 5.0.1
-- PyMuPDF 1.25.4
-- PyPDF2 3.0.1
+Ela permite:
+
+📄 Cadastrar e listar documentos que precisam de assinatura.
+
+✍️ Registrar assinaturas digitais vinculadas a documentos específicos.
+
+---
+
+## 📦 Requisitos
+
+Antes de executar o projeto, você precisará:
+
+- Python 3.7+
+- `virtualenv` (recomendado)
+- Bibliotecas listadas em `requirements.txt`
+
+---
+
+## ⚙️ Como executar
+
+1. **Clone o repositório:**
+
+- git clone https://github.com/juliobjj/quick_doc.git
+- cd api
+
+2. **Criando ambiente virtual:**
+
+- python -m venv env
+- source env/bin/activate # Linux/Mac
+- env\Scripts\activate # Windows
+
+3. **Intale as dependências:**
+
+- pip install -r requirements.txt
+
+4. **Execute a aplicações:**
+
+- flask run #Modo padrão
+- flask run --debug #Modo desenvolvimento
+
+## ✅ Verificando a API
+
+- Abra o navegador e acesse:
+
+- http://localhost:5000/health
+
+## 📄 Documentação
+
+- Todos os endpoints seguem padrão REST e retornam dados em formato JSON.
+  A documentação interativa estará disponível automaticamente via Swagger em:
+
+- http://localhost:5000/openapi/swagger#/
