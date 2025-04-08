@@ -31,28 +31,37 @@ Antes de executar o projeto, você precisará:
 
 2. **Criando ambiente virtual:**
 
-- python -m venv env
-- source env/bin/activate # Linux/Mac
-- env\Scripts\activate # Windows
+```
+python -m venv env
+source env/bin/activate # Linux/Mac
+env\Scripts\activate # Windows
+```
 
-3. **Intale as dependências:**
+3. **Instale as dependências:**
 
-- pip install -r requirements.txt
+```
+(env)$ pip install -r requirements.txt
+```
 
 4. **Execute a aplicações:**
 
-- flask run #Modo padrão
-- flask run --debug #Modo desenvolvimento
+```
+(env)$ flask run #Modo padrão
+```
+
+```
+(env)$ flask run --debug #Modo desenvolvimento
+```
 
 ## ✅ Verificando a API
 
 - Abra o navegador e acesse:
 
-- http://localhost:5000/health
+  http://localhost:5000/health
 
 ## 📄 Documentação
 
 - Todos os endpoints seguem padrão REST e retornam dados em formato JSON.
   A documentação interativa estará disponível automaticamente via Swagger em:
 
-- http://localhost:5000/openapi/swagger#/
+  http://localhost:5000/openapi/swagger#/
