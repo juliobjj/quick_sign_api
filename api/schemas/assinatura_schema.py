@@ -5,8 +5,8 @@ from datetime import datetime
 
 class AssinaturaSchema(BaseModel):
     nome: str = Field(..., title="Nome", description="Nome do usuário")
-    cpf: str = Field(..., title="CPF", description="E-mail do usuário", min_length=11)
-    id_documento: int = Field(..., title="CPF", description="E-mail do usuário")
+    cpf: str = Field(..., title="CPF", description="CPF do usuário", min_length=11)
+    id_documento: int = Field(..., title="CPF", description="Id do documento")
 
 class AssinaturaResponse(BaseModel):
     id: int
