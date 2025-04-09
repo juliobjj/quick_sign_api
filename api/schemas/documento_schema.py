@@ -1,12 +1,13 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 from typing import List, Annotated
 from flask_openapi3 import FileStorage
 from datetime import datetime
 from werkzeug.datastructures import FileStorage as WerkzeugFile
 
 class DocumentoSchema(BaseModel):
-  nome_arquivo: str = "Meu primeiro arquivo"
+  nome_arquivo: str = Field(..., title="Nome", description="Nome do arquivo")
   pdf_data:  Annotated[FileStorage, "formData"] 
+  status_assinatura: bool = False
 
 class DocumentoResponseSchema(BaseModel):
   id: int
