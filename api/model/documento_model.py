@@ -1,22 +1,25 @@
 from ..base import db 
-from .usuario_model import Usuario
+import datetime
+from sqlalchemy.orm import relationship
 
 class DocumentoModel(db.Model):
     __tablename__ = 'documento'   
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column("pk_documento", db.Integer, primary_key=True, autoincrement=True)
     nome_arquivo = db.Column(db.String(40), nullable=False)
-    data_envio = db.Column(db.String(90), nullable=False)
-    pdf_data = db.Column(db.LargeBinary, nullable=False)  # Armazena o PDF como BLOB
-    usuario_id = db.Column(db.Integer, nullable=False)
+    data_envio = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
+    pdf_data = db.Column(db.String, nullable=False)
+    status_assinatura = db.Column(db.Boolean, default=False, nullable=False)
 
-    # usuario = db.relationship("Usuario", back_populates="documento") 
-    
-    def __init__(self, nome_arquivo:str, data_envio:str, pdf_data:str, usuario_id:int):
+    assinaturas = relationship("AssinaturaModel", back_populates="documento", cascade="all, delete-orphan")
+
+    def __init__(self, nome_arquivo:str, data_envio:datetime, pdf_data:str, status_assinatura:bool):
         self.nome_arquivo = nome_arquivo
         self.data_envio = data_envio
         self.pdf_data = pdf_data 
-        self.usuario_id = usuario_id 
+        self.status_assinatura = status_assinatura 
 
-# Usuario.documento = db.relationship("DocumentoModel", back_populates="usuario")
+
+
+
 

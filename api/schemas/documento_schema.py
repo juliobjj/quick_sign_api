@@ -1,17 +1,41 @@
-from api.extension import ma
-from ..model import documento_model
-from marshmallow import fields
+from pydantic import BaseModel, validator, Field
+from typing import List, Annotated
+from flask_openapi3 import FileStorage
+from datetime import datetime
+from werkzeug.datastructures import FileStorage as WerkzeugFile
 
-class DocumentoSchema(ma.SQLAlchemyAutoSchema):
-  class Meta:
-    model = documento_model.DocumentoModel
-    load_instance = True
-    fields = ("id", "nome_arquivo", "data_envio", "pdf_data", "usuario_id")
+class DocumentoSchema(BaseModel):
+  nome_arquivo: str = Field(..., title="Nome", description="Nome do arquivo")
+  pdf_data:  Annotated[FileStorage, "formData"] 
+  status_assinatura: bool = False
 
-  nome_arquivo = fields.String(required=False)
-  data_envio = fields.String(required=False)
-  pdf_data = fields.Raw(required=True)
-  usuario_id = fields.Integer(required=True) #
+class DocumentoResponseSchema(BaseModel):
+  id: int
+  nome_arquivo: str
+  data_envio: datetime
+  pdf_data: str
+  status_assinatura: bool
+
+  class Config:
+    from_attributes = True
+
+class DocumentoBuscaSchema(BaseModel):
+    """ Define como deve ser a estrutura que representa a busca. Que será
+        feita apenas com base no nome do produto.
+    """
+    documento_id: int = 1
+
+class DocumentoListagemSchema(BaseModel):
+    """
+    Define como uma listagem de documentos será retornada
+    """
+    documentos: List[DocumentoSchema]
+
+class ValidacaoDocumento(BaseModel):
+    """
+    Retorna mensagem caso usuário cadastre sem o nome
+    """
+    mesage: DocumentoSchema
   
 
 

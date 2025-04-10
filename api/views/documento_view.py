@@ -1,72 +1,132 @@
-from flask_restful import Resource
-from flask import request, make_response, jsonify, send_file
-from io import BytesIO
-import mimetypes
+from flask import request, jsonify, send_file
+from flask_openapi3 import Tag, APIBlueprint
+from pydantic import ValidationError
+import os
 
-from api.schemas.documento_schema import DocumentoSchema
-from api.entidades.documento_entidade import DocumentoEntidade
-from api.services.documento_service import cadastrar_documento
-from api.services.documento_service import obter_documento_por_id 
+from api.schemas.documento_schema import DocumentoSchema, DocumentoResponseSchema, DocumentoBuscaSchema
+from api.services.documento_service import (
+    cadastrar_documento,
+    obter_documento_por_id,
+    editar_documento,
+    listar_todos_documentos,
+    deletar_documento,
+    salvar_arquivo,
+    obter_documento_por_id,
+    DocumentoNaoEncontradoError
+)
+from api.schemas.error import ErrorSchema
 
-class DocumentoView(Resource):
+# Tag de documentação
+documento_tag = Tag(name="Documentos", description="Gerenciamento de documento")
+documento_bp = APIBlueprint("documento", __name__, url_prefix="/documento" ,abp_tags=[documento_tag])
 
-  def get(self, documento_id):
-    documento = obter_documento_por_id(documento_id)
-
-    if not documento:
-       return make_response(jsonify({"erro": "Documento não encontrado"}), 404)
-    
-    if not documento.pdf_data:
-            return make_response(jsonify({"erro": "Arquivo PDF não encontrado"}), 404)
-
-    return send_file(
-            BytesIO(documento.pdf_data),  # Converte os dados binários para um arquivo em memória
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name=documento.nome_arquivo)  # Define o nome do arquivo no download
-
-  def post(self):
-    documento_schema = DocumentoSchema()
-
-    # Verifica se o arquivo foi enviado
-    if 'pdf_data' not in request.files:
-      return make_response(jsonify({"erro": "O arquivo PDF é obrigatório"}), 400)
-    
-    # Extrai os dados
-    pdf_data = request.files['pdf_data']
-    nome_arquivo = pdf_data.filename.lower()
-    data_envio = request.form.get("data_envio")
-    usuario_id = request.form.get("usuario_id")
-
-    # Verifica extensão do arquivo
-    if not nome_arquivo.endswith(".pdf"):
-        return make_response(jsonify({"erro": "Apenas arquivos PDF são permitidos"}), 400)
-    
-    # Verifica o MIME type do arquivo
-    mime_type = mimetypes.guess_type(nome_arquivo)[0]
-    if mime_type != "application/pdf":
-      return make_response(jsonify({"erro": "O arquivo enviado não é um PDF válido"}), 400)
-
-    if not nome_arquivo or not usuario_id:
-           return make_response(jsonify({"erro": "Nome do arquivo e usuário são obrigatórios"}), 400)
-    
+class DocumentoView:
+  @documento_bp.post("/cadastrar", tags=[documento_tag], responses={"201": DocumentoResponseSchema,"400": ErrorSchema})
+  def cadastrar(form: DocumentoSchema):
+    """
+    Cadastra um novo documento
+    """
     try: 
-        pdf_data = pdf_data.read()
-    except Exception as e:
-        return make_response(jsonify({"erro": f"Erro ao processar arquivo: {str(e)}"}), 500)
+      pdf_data = request.files.get("pdf_data")
+
+      if not pdf_data or not pdf_data.filename.lower().endswith(".pdf"):
+        return {"erro": "Apenas arquivos PDF são permitidos"}, 400
+
+      caminho_arquivo = salvar_arquivo(pdf_data)
+
+      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo, status_assinatura=form.status_assinatura) 
+      documento_cadastrado = cadastrar_documento(documento_schema)  
+
+      return jsonify(documento_cadastrado.model_dump()), 201
     
-    # Lê os dados binários do arquivo
-    #pdf_data = pdf_data.read()
+    except ValidationError as e:
+      return jsonify({"erro": "Dados inválidos", "mensagem": str(e)}), 400
+    
+    except Exception as e: 
+       return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500
 
-    # Cria a entidade de usuário
-    novo_documento = DocumentoEntidade(nome_arquivo=nome_arquivo, data_envio=data_envio, pdf_data=pdf_data, usuario_id=usuario_id)
+  @documento_bp.put("/editar", tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
+  def editar(form: DocumentoSchema, query: DocumentoBuscaSchema):
+    """
+    Edita um documento a partir de um id
+    """
+    try:
+      pdf_data = request.files.get("pdf_data")
+     
+      caminho_arquivo = salvar_arquivo(pdf_data)
+      print(caminho_arquivo)
+       
+      documento_schema = DocumentoSchema(nome_arquivo=form.nome_arquivo, pdf_data=caminho_arquivo, status_assinatura=form.status_assinatura) 
+      documento = editar_documento(query.documento_id, documento_schema)
 
-    # Chama o serviço para cadastrar no banco
-    cadastrar_documento(novo_documento)
+      return jsonify(documento.model_dump()), 201
+    
+    except Exception as e: 
+        return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500 
+     
+  @documento_bp.get("/listar", tags=[documento_tag], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  def listar_documentos():
+    """Faz a busca por todos os Documentos cadastrados
 
-    # Retorna o documento criado serializado
-    return make_response(jsonify({"sucsess": "Arquivo cadastrado"}), 201)
+    Retorna uma representação da listagem de documentos
+    """
+    documentos = listar_todos_documentos()
+
+    if not documentos: 
+      return {"documentos": []}, 200
+    else: 
+      return jsonify({"documentos": [doc.model_dump() for doc in documentos]}), 200
+  
+  @documento_bp.get("/", tags=[documento_tag], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  def obter_documento(query: DocumentoBuscaSchema):
+    """Faz a busca por um Documento a partir do id do documento
+
+    Retorna uma representação do documento
+    """
+    try:
+      documento = obter_documento_por_id(query.documento_id)
+      documento_serializado = DocumentoResponseSchema.from_orm(documento)
+      
+      return jsonify(documento_serializado.model_dump()), 200 
+    
+    except Exception as e:
+      return jsonify({"mensagem": str(e)}), 404
+    
+
+  @documento_bp.delete("/deletar", tags=[documento_tag], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  def deletar_documento(query: DocumentoBuscaSchema): 
+    """
+    Deleta um documento
+    """
+    try:
+      documento = deletar_documento(query.documento_id)
+      documento_serializado = DocumentoResponseSchema.from_orm(documento)
+      return jsonify({"documento": documento_serializado.model_dump()}), 200
+    
+    except Exception as e:
+      return jsonify({"mensagem": str(e)}), 404
+    
+  @documento_bp.get("/download", tags=[documento_tag])
+  def download_documento(query: DocumentoBuscaSchema):
+    """Faz a busca por um Documento a partir do id do documento
+
+    Retorna uma representação do documento
+    """
+    try:
+      documento = obter_documento_por_id(query.documento_id)
+      caminho_arquivo = documento.pdf_data
+
+      if not os.path.exists(caminho_arquivo):
+        return jsonify({"mensagem": "Arquivo não encontrado"}), 404
+      
+      return send_file(caminho_arquivo, as_attachment=True, mimetype="application/pdf")
+    except DocumentoNaoEncontradoError as e:
+      return jsonify({"mensagem": str(e)}), 404
+    except Exception as e:
+      return jsonify({"mensagem": str(e)}), 404
+    
   
 
 
-
+    
+  

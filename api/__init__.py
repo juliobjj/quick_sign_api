@@ -1,31 +1,28 @@
+from flask_openapi3 import OpenAPI, Info
 from flask import Flask
-from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
-from .extension import ma
 from .base import db 
+from flask_cors import CORS
 
 def create_app():
-  app = Flask(__name__)
- 
-  app.config.from_object('config.Config')
+    info = Info(title="API de Quick Sign", version="1.0.0")
+    app = OpenAPI(__name__, info=info)  # Inicializando o OpenAPI
+    CORS(app)
 
-  db.init_app(app)
-  api = Api(app)
-  
-  # Inicializa extensões
-  ma.init_app(app)
+    app.config.from_object("config.Config")
+    db.init_app(app)
 
-  # Importa e adiciona os recursos da API
-  from .views.usuario_views import UsuarioList
-  api.add_resource(UsuarioList, '/usuario')
+    # Importando os Blueprints para registrar as rotas
+    from api.views.assinatura_views import assinatura_bp
+    app.register_api(assinatura_bp) 
 
-  from .views.documento_view import DocumentoView
-  api.add_resource(DocumentoView, "/documento", "/documento/<int:documento_id>")
+    from .views.documento_view import documento_bp
+    app.register_api(documento_bp)  
 
-  # Cria o banco dentro do contexto
-  with app.app_context():
-      db.create_all()
+    from .views.health_view import health_bp
+    app.register_api(health_bp)
 
-  return app
+    # Criar o banco dentro do contexto
+    with app.app_context():
+        db.create_all()
 
-
+    return app
