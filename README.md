@@ -27,39 +27,37 @@ Antes de executar o projeto, você precisará:
 1. **Clone o repositório:**
 
 ```
-(env)$ git clone https://github.com/juliobjj/quick_doc.git
+git clone https://github.com/juliobjj/quick_sign_api.git
+```
+```
+cd api
 ```
 
 2. **Criando ambiente virtual:**
 
 ```
-(env)$ python3 -m venv env
+python3 -m venv env
 ```
 Linux/Mac
 ```
-(env)$ source env/bin/activate
+source env/bin/activate
 ```
 Windows
 ```
-(env)$ env\Scripts\activate 
+env\Scripts\activate 
 ```
 
 3. **Instale as dependências:**
 
-Acesse o diretório api
 ```
-(env)$ cd api 
-```
-
-```
-(env)$ pip install -r requiriments.txt
+pip install -r requirements.txt
 ```
 
 4. **Execute a aplicações:**
 
 Modo padrão:
 ```
-(env)$ flask run 
+flask run 
 ```
 Modo desenvolvimento: 
 ```
