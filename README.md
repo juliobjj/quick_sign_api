@@ -49,20 +49,15 @@ env\Scripts\activate
 
 3. **Instale as dependências:**
 
-Acesse o diretório api
 ```
-(env)$ cd api 
-```
-
-```
-(env)$ pip install -r requiriments.txt
+pip install -r requirements.txt
 ```
 
 4. **Execute a aplicações:**
 
 Modo padrão:
 ```
-(env)$ flask run 
+flask run 
 ```
 Modo desenvolvimento: 
 ```
