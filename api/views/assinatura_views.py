@@ -18,13 +18,11 @@ class AssinaturaView:
   @assinatura_bp.post("/cadastrar", tags=[assinatura_tag], responses={"201": AssinaturaResponse, "400": ErrorSchema, "422": ValidacaoAssinatura})
   def cadastrar(body: AssinaturaSchema):
      """
-     Cadastra um novo assinatura
+     Cadastra um novo assinatura, assina visualmente o pdf e atualiza o documento.
      """
      try: 
-        # Valida os dados de entrada
+        # Recupera os dados de entrada
         dados = request.get_json(force=True)
-
-        cpf_limpo = re.sub(r"\D", "", body.cpf)
 
         if pode_assinar(body.id_documento):
          assinatura_schema = AssinaturaSchema(**dados)
@@ -34,7 +32,7 @@ class AssinaturaView:
 
          buscar_documento = obter_documento_por_id(body.id_documento)
 
-         assinar_pdf(buscar_documento.pdf_data, body.nome, cpf_limpo)
+         assinar_pdf(buscar_documento.pdf_data, body.nome, body.cpf)
 
          documento_schema = DocumentoSchema(
             nome_arquivo=buscar_documento.nome_arquivo,
@@ -45,15 +43,14 @@ class AssinaturaView:
          editar_documento(body.id_documento, documento_schema)
 
          # Objeto serializado
-         return jsonify(assinatura_cadastrado.dict()), 201
+         return jsonify(assinatura_cadastrado.model_dump()), 201
         else:
-           return jsonify({"mesage": "PDF já assinado"}), 400
+           return jsonify({"mensagem": "PDF já assinado"}), 400
      except ValidationError as e:
         #Retorna erro de validação do Schema
-        return jsonify({"erro": "Dados inválidos", "mensage": str(e)}), 400
+        return jsonify({"erro": "Dados inválidos", "mensagem": str(e)}), 422
      
      except ValueError as e:
-        # Erro usuáriojá existe
         return jsonify({"erro": str(e)}), 400
      
      except Exception as e: 

@@ -36,6 +36,10 @@ class ValidacaoDocumento(BaseModel):
     Retorna mensagem caso usuário cadastre sem o nome
     """
     mesage: DocumentoSchema
+    
+class DocumentoNaoEncontradoError(Exception):
+    pass
+
   
 
 

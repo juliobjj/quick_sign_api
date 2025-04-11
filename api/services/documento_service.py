@@ -1,5 +1,5 @@
 from ..model.documento_model import DocumentoModel
-from ..schemas.documento_schema import DocumentoSchema, DocumentoResponseSchema
+from ..schemas.documento_schema import DocumentoSchema, DocumentoResponseSchema, DocumentoNaoEncontradoError
 from ..base import db 
 
 from werkzeug.utils import secure_filename
@@ -9,9 +9,6 @@ import os
 import uuid
 
 UPLOAD_FOLDER = "uploads/"
-
-class DocumentoNaoEncontradoError(Exception):
-    pass
 
 def cadastrar_documento(documento_schema: DocumentoSchema):
   """

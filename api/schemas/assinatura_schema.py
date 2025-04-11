@@ -30,20 +30,3 @@ class ValidacaoAssinatura(BaseModel):
         Retorna mensagem caso assinatura cadastre sem o nome
     """
     mesage: AssinaturaSchema
-
-
-def apresenta_produtos(assinatura: List[AssinaturaModel]):
-    """ Retorna uma representação da assinatura seguindo o schema definido em
-        AssinaturaSchema.
-    """
-    result = []
-    for assinatura in assinatura:
-        result.append({
-            "id": assinatura.id,
-            "nome": assinatura.nome,
-            "cpf": assinatura.cpf,
-            "data_assinatura": assinatura.data_assinatura,
-            "id_documento": assinatura.id_documento,
-        })
-
-    return {"assinatura": result}
