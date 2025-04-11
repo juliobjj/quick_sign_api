@@ -27,7 +27,7 @@ Antes de executar o projeto, você precisará:
 1. **Clone o repositório:**
 
 ```
-(env)$ git clone https://github.com/juliobjj/quick_doc.git
+(env)$ git clone [https://github.com/juliobjj/quick_doc.git](https://github.com/juliobjj/quick_sign_api.git)
 ```
 
 2. **Criando ambiente virtual:**
