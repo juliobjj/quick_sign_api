@@ -11,12 +11,14 @@ auth_tag = Tag(name="Autenticação", description="Gerenciamento de assinaturas"
 # Criando o APIBlueprint
 auth_bp = APIBlueprint("autenticação", __name__, url_prefix="/auth", abp_tags=[auth_tag])
 
-@auth_bp.route("/login", methods=["POST"])
+@auth_bp.post("/login", tags=[auth_tag], responses={"200": TokenResponse, "401": {"description": "Credenciais inválidas"}})
 @validate()
 def login(body: LoginRequest):
     service = AuthService(db.session)
     token = service.authenticate_user(body.email, body.password)
     db.session.close()
+
+    print(TokenResponse(access_token=token).dict())
 
     if not token:
         return jsonify({"error": "Credenciais inválidas"}), 401

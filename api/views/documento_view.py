@@ -1,6 +1,7 @@
 from flask import request, jsonify, send_file
 from flask_openapi3 import Tag, APIBlueprint
 from pydantic import ValidationError
+from flask_jwt_extended import jwt_required
 import os
 
 from api.schemas.documento_schema import DocumentoSchema, DocumentoResponseSchema, DocumentoBuscaSchema
@@ -21,7 +22,8 @@ documento_tag = Tag(name="Documentos", description="Gerenciamento de documento")
 documento_bp = APIBlueprint("documento", __name__, url_prefix="/documento" ,abp_tags=[documento_tag])
 
 class DocumentoView:
-  @documento_bp.post("/cadastrar", tags=[documento_tag], responses={"201": DocumentoResponseSchema,"400": ErrorSchema})
+  @documento_bp.post("/cadastrar", tags=[documento_tag], security=[{"BearerAuth": []}], responses={"201": DocumentoResponseSchema,"400": ErrorSchema})
+  @jwt_required()
   def cadastrar(form: DocumentoSchema):
     """
     Cadastra um novo documento
@@ -45,7 +47,7 @@ class DocumentoView:
     except Exception as e: 
        return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500
 
-  @documento_bp.put("/editar", tags=[documento_tag], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
+  @documento_bp.put("/editar", tags=[documento_tag], security=[{"BearerAuth": []}], responses={"201": DocumentoResponseSchema, "400": ErrorSchema})
   def editar(form: DocumentoSchema, query: DocumentoBuscaSchema):
     """
     Edita um documento a partir de um id
@@ -64,7 +66,8 @@ class DocumentoView:
     except Exception as e: 
         return jsonify({"erro": "Erro interno no servidor", "mensagem": str(e)}), 500 
      
-  @documento_bp.get("/listar", tags=[documento_tag], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  @documento_bp.get("/listar", tags=[documento_tag], security=[{"BearerAuth": []}], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  @jwt_required()
   def listar_documentos():
     """Faz a busca por todos os Documentos cadastrados
 
@@ -77,7 +80,8 @@ class DocumentoView:
     else: 
       return jsonify({"documentos": [doc.model_dump() for doc in documentos]}), 200
   
-  @documento_bp.get("/", tags=[documento_tag], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  @documento_bp.get("/obter", tags=[documento_tag], security=[{"BearerAuth": []}],  responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  @jwt_required()
   def obter_documento(query: DocumentoBuscaSchema):
     """Faz a busca por um Documento a partir do id do documento
 
@@ -93,7 +97,8 @@ class DocumentoView:
       return jsonify({"mensagem": str(e)}), 404
     
 
-  @documento_bp.delete("/deletar", tags=[documento_tag], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  @documento_bp.delete("/deletar", tags=[documento_tag], security=[{"BearerAuth": []}], responses={"200": DocumentoResponseSchema, "400": ErrorSchema})
+  @jwt_required()
   def deletar_documento(query: DocumentoBuscaSchema): 
     """
     Deleta um documento
@@ -106,7 +111,8 @@ class DocumentoView:
     except Exception as e:
       return jsonify({"mensagem": str(e)}), 404
     
-  @documento_bp.get("/download", tags=[documento_tag])
+  @documento_bp.get("/download", tags=[documento_tag], security=[{"BearerAuth": []}])
+  @jwt_required()
   def download_documento(query: DocumentoBuscaSchema):
     """Faz a busca por um Documento a partir do id do documento
 
