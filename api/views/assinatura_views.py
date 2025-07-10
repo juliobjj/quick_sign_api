@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_openapi3 import Tag, APIBlueprint
 from pydantic import ValidationError
-import re
+from flask_jwt_extended import jwt_required
 
 from api.schemas.assinatura_schema import AssinaturaSchema, ValidacaoAssinatura, AssinaturaResponse
 from api.schemas.documento_schema import DocumentoSchema
@@ -15,7 +15,8 @@ assinatura_tag = Tag(name="Assinaturas", description="Gerenciamento de assinatur
 assinatura_bp = APIBlueprint("assinaturas", __name__, url_prefix="/assinatura", abp_tags=[assinatura_tag])
 
 class AssinaturaView:
-  @assinatura_bp.post("/cadastrar", tags=[assinatura_tag], responses={"201": AssinaturaResponse, "400": ErrorSchema, "422": ValidacaoAssinatura})
+  @assinatura_bp.post("/cadastrar", tags=[assinatura_tag], security=[{"BearerAuth": []}], responses={"201": AssinaturaResponse, "400": ErrorSchema, "422": ValidacaoAssinatura})
+  @jwt_required()
   def cadastrar(body: AssinaturaSchema):
      """
      Cadastra um novo assinatura, assina visualmente o pdf e atualiza o documento.

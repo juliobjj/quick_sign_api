@@ -29,22 +29,36 @@ Antes de executar o projeto, você precisará:
 ```
 git clone https://github.com/juliobjj/quick_sign_api.git
 ```
+
 ```
 cd api
+```
+
+É necessário criar um arquivo .env na past api e gerar uma chave secreta para assinar os tokens.
+
+Exemplo (.env):
+
+```
+JWT_SECRET_KEY=sua_chave
+
 ```
 
 2. **Criando ambiente virtual:**
 
 ```
-python3 -m venv env
+python3 -m venv .venv
 ```
+
 Linux/Mac
+
 ```
-source env/bin/activate
+source .venv/bin/activate
 ```
+
 Windows
+
 ```
-env\Scripts\activate 
+.venv\Scripts\activate
 ```
 
 3. **Instale as dependências:**
@@ -56,10 +70,13 @@ pip install -r requirements.txt
 4. **Execute a aplicações:**
 
 Modo padrão:
+
 ```
-flask run 
+flask run
 ```
-Modo desenvolvimento: 
+
+Modo desenvolvimento:
+
 ```
 (env)$ flask run --debug
 ```
@@ -69,6 +86,12 @@ Modo desenvolvimento:
 - Abra o navegador e acesse:
 
   http://localhost:5000/health
+
+## 🧪 Testes unitários
+
+- 1. Cadastre um usuário de teste pelo Swagger: /usuario/cadastrar
+- 2. Altere o arquivo de teste e insira as informações cadastradas
+- 3. Execute o comando: pytest
 
 ## 📄 Documentação
 
