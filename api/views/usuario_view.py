@@ -20,14 +20,12 @@ class UsuarioView:
   @usuario_bp.post(
       "/cadastrar",
       tags=[usuario_tag],
-      security=[{"BearerAuth": []}],
       responses={
           "201": UsuarioResponse,
           "400": ErrorSchema,
           "422": UsuarioValidacao
       }
   )
-  @jwt_required()
   def cadastrar(body: UsuarioSchema):
       """
       Cadastra um novo usuário. Requer autenticação JWT.

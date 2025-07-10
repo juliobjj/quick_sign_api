@@ -87,6 +87,12 @@ Modo desenvolvimento:
 
   http://localhost:5000/health
 
+## 🧪 Testes unitários
+
+- 1. Cadastre um usuário de teste pelo Swagger: /usuario/cadastrar
+- 2. Altere o arquivo de teste e insira as informações cadastradas
+- 3. Execute o comando: pytest
+
 ## 📄 Documentação
 
 - Todos os endpoints seguem padrão REST e retornam dados em formato JSON.
