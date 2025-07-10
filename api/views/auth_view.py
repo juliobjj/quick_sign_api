@@ -18,9 +18,7 @@ def login(body: LoginRequest):
     token = service.authenticate_user(body.email, body.password)
     db.session.close()
 
-    print(TokenResponse(access_token=token).dict())
-
     if not token:
         return jsonify({"error": "Credenciais inválidas"}), 401
 
-    return TokenResponse(access_token=token).dict()
+    return TokenResponse(access_token=token).model_dump(), 200

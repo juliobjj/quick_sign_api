@@ -1,4 +1,3 @@
-import os
 from flask_openapi3 import OpenAPI, Info
 from flask import jsonify
 from flask_jwt_extended import JWTManager
